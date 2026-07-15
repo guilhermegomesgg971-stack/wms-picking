@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Configuração da página para ficar com cara de App
+# 1. Configuração da página
 st.set_page_config(page_title="WMS Picking", page_icon="📦", layout="centered")
 
-# 2. Adicionando Cores e Estilo (CSS)
+# 2. Estilo Visual (CSS)
 st.markdown("""
     <style>
     .main { background-color: #f5f7f9; }
@@ -35,42 +35,41 @@ st.write("---")
 # 4. Carregamento dos dados
 @st.cache_data
 def carregar_dados():
-    # Certifique-se de que o arquivo está na mesma pasta do app.py
-    df = pd.read_csv('produtos.csv')
+    # Carrega o arquivo dados.csv
+    df = pd.read_csv('dados.csv')
     return df
 
 try:
     df = carregar_dados()
 
-    # 5. Criando o formulário com o botão de pesquisa
+    # 5. Formulário de pesquisa
     with st.form(key='search_form'):
-        pesquisa = st.text_input("Digite o código ou descrição do produto:")
+        pesquisa = st.text_input("Digite o código ou descrição:")
         submit_button = st.form_submit_button(label='🔍 PESQUISAR')
 
-    # 6. Lógica de pesquisa (só acontece quando aperta o botão)
+    # 6. Lógica de pesquisa
     if submit_button and pesquisa:
-        # Filtro simples
+        # Filtro nas colunas 'codigo' e 'descricao'
         resultado = df[
-            df['código'].astype(str).str.contains(pesquisa, case=False, na=False) | 
-            df['descrição'].astype(str).str.contains(pesquisa, case=False, na=False)
+            df['codigo'].astype(str).str.contains(pesquisa, case=False, na=False) | 
+            df['descricao'].astype(str).str.contains(pesquisa, case=False, na=False)
         ]
 
         if not resultado.empty:
             st.success(f"Encontrei {len(resultado)} item(ns):")
             for _, item in resultado.iterrows():
-                # Exibindo os resultados em "cards" bonitos
                 st.markdown(f"""
                 <div class="result-card">
-                    <b>Produto:</b> {item['descrição']}<br>
-                    <b>Código:</b> {item['código']}<br>
-                    <b>Estação:</b> {item['estação']}<br>
+                    <b>Produto:</b> {item['descricao']}<br>
+                    <b>Código:</b> {item['codigo']}<br>
+                    <b>Estação:</b> {item['estacao']}<br>
                     <b>Local:</b> Rack {item['Rack']} | Linha {item['linha']} | Coluna {item['coluna']}
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.warning("Nenhum produto encontrado. Verifique o código!")
+            st.warning("Nenhum produto encontrado. Verifique o que digitou!")
     elif submit_button and not pesquisa:
         st.error("Por favor, digite algo para pesquisar.")
 
 except Exception as e:
-    st.error("Erro ao carregar os dados. Verifique se o arquivo produtos.csv está no GitHub.")
+    st.error("Erro ao carregar o arquivo 'dados.csv'. Verifique se ele está no GitHub e se os nomes das colunas estão corretos.")
