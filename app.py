@@ -35,8 +35,8 @@ st.write("---")
 # 4. Carregamento dos dados
 @st.cache_data
 def carregar_dados():
-    # Carrega o arquivo dados.csv
-    df = pd.read_csv('dados.csv')
+    # Carrega o seu arquivo original produtos.csv
+    df = pd.read_csv('produtos.csv')
     return df
 
 try:
@@ -49,7 +49,8 @@ try:
 
     # 6. Lógica de pesquisa
     if submit_button and pesquisa:
-        # Filtro nas colunas 'codigo' e 'descricao'
+        # Importante: Os nomes aqui dentro devem ser IGUAIS aos cabeçalhos do seu produtos.csv
+        # Se no seu arquivo os nomes forem com acento (código, descrição), coloque aqui também!
         resultado = df[
             df['codigo'].astype(str).str.contains(pesquisa, case=False, na=False) | 
             df['descricao'].astype(str).str.contains(pesquisa, case=False, na=False)
@@ -67,9 +68,9 @@ try:
                 </div>
                 """, unsafe_allow_html=True)
         else:
-            st.warning("Nenhum produto encontrado. Verifique o que digitou!")
+            st.warning("Nenhum produto encontrado.")
     elif submit_button and not pesquisa:
         st.error("Por favor, digite algo para pesquisar.")
 
 except Exception as e:
-    st.error("Erro ao carregar o arquivo 'dados.csv'. Verifique se ele está no GitHub e se os nomes das colunas estão corretos.")
+    st.error("Erro ao carregar o 'produtos.csv'. Verifique se os nomes das colunas no Excel estão iguais aos do código.")
